@@ -8,15 +8,22 @@ public class NotifyMeService {
 
     // TODO: lab1
     //  1. Inject MessageSender.
-    private MessageSender messageSender;
-
     // TODO lab2
     //  1. Inject Translator
     // TODO lab3
     //  1. Inject sentiment detector
+
+    private MessageSender messageSender;
+
+    private Translator translator;
+
+    private Sentiment sentiment;
+
     @Autowired
-    public NotifyMeService(MessageSender messageSender) {
+    public NotifyMeService(MessageSender messageSender, Translator translator, Sentiment sentiment) {
         this.messageSender = messageSender;
+        this.translator = translator;
+        this.sentiment = sentiment;
     }
     
     public String notifyMe(NotifyMeDO notifyMe) {
@@ -24,9 +31,6 @@ public class NotifyMeService {
         // TODO: lab1
         //  1. Send text using sender.
         //  2. Return sent message.
-        final String text = notifyMe.text();
-        messageSender.send(text);
-
         // TODO: lab2
         //  1. Translate text from using translator.
         //  2. Change sending of text to "translated text" and return it.
@@ -34,8 +38,10 @@ public class NotifyMeService {
         //  1. Detect sentiment of translated message.
         //  2. Change sending of text to "setiment: translated text" and return it..
 
-
-        return text;
+        String translatedText = translator.translate(notifyMe);
+        String textSentiment = sentiment.detectSentiment(notifyMe.targetLc(), translatedText);
+        messageSender.send(textSentiment + ": " + translatedText);
+        return textSentiment + ": " + translatedText;
     }
     
 }
